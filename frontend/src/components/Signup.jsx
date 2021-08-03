@@ -1,10 +1,13 @@
 import { Avatar, Button, Grid, Paper, TextField, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import React from 'react'
+import {React,useState} from 'react'
 import {useForm} from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
+import {Link} from 'react-router-dom'
+import addusersapi from '../apis/addusersapi'
+
 
 const userSchema=yup.object().shape({
     firstname:yup.string().required('*First Name is required'),
@@ -31,6 +34,29 @@ const useStyles=makeStyles((theme)=>({
 }))
 
 const Signup=()=>{
+    const [firstname, setFirstname]=useState('')
+    const [lastname, setLastname]=useState('')
+    const [email, setEmail]=useState('')
+    const [password,setPassword]=useState('')
+
+    const handleSubmitform = async (e) => {
+        e.preventDefault();
+        console.log(e.target.value);
+        try {
+            const response= await addusersapi.post('/',{
+                firstname,
+                lastname,
+                email,
+                password
+                
+            })
+            console.log('test')
+
+        } catch (error) {}
+    
+      };
+
+
     const classes=useStyles()
     const {register,handleSubmit,formState: { errors }}=useForm({resolver: yupResolver(userSchema)})
     const onSubmit = (data) => {console.log(data)};
@@ -52,27 +78,27 @@ const Signup=()=>{
             <form onSubmit={handleSubmit(onSubmit)} >
                 <Grid container spacing={2} >
                     <Grid item xs={12} sm={6}>
-                        <TextField id="outlined-basic" label="First Name*" variant="outlined" fullWidth {...register('firstname')} />
+                        <TextField id="outlined-basic" label="First Name*" variant="outlined" fullWidth {...register('firstname')} value={firstname} onChange={e=>setFirstname(e.target.value)} />
                         <p style={errorStyle}>{errors.firstname?.message}</p>
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <TextField id="outlined-basic" label="Last Name*" variant="outlined" fullWidth {...register('lastname')}/>
+                        <TextField id="outlined-basic" label="Last Name*" variant="outlined" fullWidth {...register('lastname')} value={lastname} onChange={e=>setLastname(e.target.value)}/>
                         <p style={errorStyle}>{errors.lastname?.message}</p>
                     </Grid>
                     <Grid item xs={12}>
-                        <TextField id="outlined-basic" label="Email*" variant="outlined" fullWidth {...register('email')}/>
+                        <TextField id="outlined-basic" label="Email*" variant="outlined" fullWidth {...register('email')} value={email} onChange={e=>setEmail(e.target.value)}/>
                         <p style={errorStyle}>{errors.email?.message}</p>
                     </Grid>
                     <Grid item xs={12}>
-                        <TextField id="outlined-basic" label="Password*" variant="outlined" fullWidth {...register('password')}/>
+                        <TextField id="outlined-basic" label="Password*" variant="outlined" fullWidth {...register('password')} value={password} onChange={e=>setPassword(e.target.value)}/>
                         <p style={errorStyle}>{errors.password?.message}</p>
                     </Grid>
                     <Grid container className={classes.signupbuttons}>
                         <Grid item >
-                            <Button variant="contained" color="primary" >Cancel</Button>
+                            <Button variant="contained" color="primary" component={Link} to='/'>Cancel</Button>
                         </Grid>
                         <Grid item >
-                            <Button variant="contained" color="primary" type='submit' >Sign Up</Button>
+                            <Button variant="contained" color="primary" type='submit' onClick={handleSubmitform} component={Link} to='/'>Sign Up</Button>
                         </Grid>
                     </Grid>
     

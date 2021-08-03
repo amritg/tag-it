@@ -1,11 +1,14 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors'
 
 import * as db from './db/index.js'
 
 dotenv.config()
 
 const app = express();
+
+app.use(cors())
 app.use(express.json());
 
 // Select all the users
@@ -79,8 +82,8 @@ app.delete('/api/v1/users/:id',async (req,res)=>{
 // update user by id
 app.put('/api/v1/users/:id',async (req,res)=>{
     const id=req.params.id
-    const text="update users set username= $1,email=$2,password=$3 where user_id = $4;"
-    const values=[req.body.username,req.body.email,req.body.password,id]
+    const text="update users set firstname= $1,lastname=$2,email=$3,password=$4 where user_id = $5;"
+    const values=[req.body.firstname,req.body.lastname,req.body.email,req.body.password,id]
     try {
         
         const result= await db.query(text,values)
@@ -92,6 +95,22 @@ app.put('/api/v1/users/:id',async (req,res)=>{
     } catch (error){
         console.log(error)
     }
+})
+
+app.post('/api/v1/users',async (req,res)=>{
+    const text="insert into users (firstname,lastname,password,email) values ($1,$2,$3,$4);"
+    const values=[req.body.firstname,req.body.lastname,req.body.email,req.body.password]
+    try {
+        const result= await db.query(text,values)
+        res.status(200).json({
+        status:'success',
+        message: 'New user created'
+        })
+
+    } catch (error){
+        console.log(error)
+    }
+
 })
 
 const port=process.env.PORT || 3001
